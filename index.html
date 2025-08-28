@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>जीव विज्ञान क्विज़</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif; /* Simple font */
+            color: #333;
+            background-color: #f0f0f0; /* Simple light background */
+        }
+
+        #overall-wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ad-container {
+            width: 100%;
+            max-width: 320px; /* Ad width */
+            min-height: 50px; /* Ad height */
+            text-align: center;
+            padding: 5px 0; /* Reduced padding for ads */
+            background-color: #e9e9e9; /* Simple ad background */
+            border-bottom: 1px solid #ddd; /* Separator for top ad */
+            border-top: 1px solid #ddd; /* Separator for bottom ad */
+            margin: 5px 0; /* Some margin to separate from content */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #666; /* Placeholder text color */
+            font-size: 0.8em;
+            overflow: hidden;
+        }
+
+        #bottom-ad-container {
+            border-top: 1px solid #ddd; /* Only top border for bottom ad */
+            border-bottom: none;
+        }
+
+        .quiz-content-area {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 10px; /* Reduced padding */
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .quiz-container {
+            background: #fff;
+            padding: 20px 30px; /* Reduced padding */
+            border-radius: 8px; /* Simple rounded corners */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Lighter shadow */
+            width: 100%;
+            max-width: 600px; /* Adjusted max-width */
+            text-align: center;
+        }
+        
+        h1, h2 {
+            color: #0056b3;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        p {
+            font-size: 1em;
+            line-height: 1.5;
+        }
+        .section {
+            display: none;
+        }
+        #welcome-screen {
+            display: block;
+        }
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc; /* Simple border */
+            border-radius: 5px; /* Simple rounded corners */
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 5px;
+            transition: background-color 0.2s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .question-text {
+            font-size: 1.2em; /* Slightly smaller, still bold */
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #222;
+            line-height: 1.5;
+        }
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+        .options-list li {
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            margin-bottom: 8px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95em;
+            text-align: left;
+            transition: background-color 0.2s ease;
+        }
+        .options-list li:hover:not(.correct, .incorrect, .disabled) {
+            background-color: #e9e9e9;
+        }
+        .options-list li.correct {
+            background-color: #d4edda; /* Light green */
+            color: #155724; /* Dark green */
+            border-color: #28a745;
+            font-weight: bold;
+        }
+        .options-list li.incorrect {
+            background-color: #f8d7da; /* Light red */
+            color: #721c24; /* Dark red */
+            border-color: #dc3545;
+            font-weight: bold;
+        }
+        .options-list li.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .navigation-buttons {
+            margin-top: 15px;
+        }
+        .results-summary {
+            text-align: left;
+            margin-top: 20px;
+            font-size: 1em;
+            line-height: 1.8;
+            padding: 10px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            background-color: #e6f2ff;
+        }
+        .results-summary p {
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .results-summary strong {
+            color: #0056b3;
+            font-weight: bold;
+        }
+        .question-counter {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 10px;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+    <div id="overall-wrapper">
+        <!-- Top Ad Container -->
+        <div id="top-ad-container" class="ad-container">
+            <span class="ad-placeholder-text">विज्ञापन यहाँ दिखेगा (ऊपर)</span>
+            <script type="text/javascript">
+                var atOptionsTop = { /* Top Ad: Use a unique variable name for top ad */
+                    'key' : '4b505c9273cf9161c278efee028f35e2',
+                    'format' : 'iframe',
+                    'height' : 50,
+                    'width' : 320,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="//www.highperformanceformat.com/4b505c9273cf9161c278efee028f35e2/invoke.js"></script>
+        </div>
+
+        <!-- Main Quiz Content Area (This will take up the middle space) -->
+        <div class="quiz-content-area">
+            <div class="quiz-container">
+
+                <!-- Welcome Screen -->
+                <div id="welcome-screen" class="section">
+                    <h1>जीव विज्ञान क्विज़</h1>
+                    <p>इस क्विज़ में भाग लें और अपने ज्ञान का परीक्षण करें!</p>
+                    <p>कृपया अपना नाम दर्ज करें:</p>
+                    <input type="text" id="userNameInput" placeholder="आपका नाम">
+                    <button id="startButton">क्विज़ शुरू करें</button>
+                </div>
+
+                <!-- Quiz Screen -->
+                <div id="quiz-screen" class="section">
+                    <h2 id="quiz-title"></h2>
+                    <p class="question-counter" id="question-counter"></p>
+                    <p class="question-text" id="question-text"></p>
+                    <ul class="options-list" id="options-list">
+                        <!-- Options will be loaded here by JavaScript -->
+                    </ul>
+                    <div class="navigation-buttons">
+                        <button id="skipButton">छोड़ें</button>
+                        <button id="nextButton" disabled>अगला प्रश्न</button>
+                    </div>
+                </div>
+
+                <!-- Results Screen -->
+                <div id="results-screen" class="section">
+                    <h1>क्विज़ परिणाम</h1>
+                    <div class="results-summary">
+                        <p><strong>नाम:</strong> <span><span id="finalUserName"></span></span></p>
+                        <p><strong>कुल प्रश्न:</strong> <span><span id="totalQuestions"></span></span></p>
+                        <p><strong>सही उत्तर:</strong> <span><span id="correctCount"></span></span></p>
+                        <p><strong>गलत उत्तर:</strong> <span><span id="incorrectCount"></span></span></p>
+                        <p><strong>छोड़े गए प्रश्न:</strong> <span><span id="skippedCount"></span></span></p>
+                    </div>
+                    <button onclick="location.reload()">दोबारा शुरू करें</button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Bottom Ad Container -->
+        <div id="bottom-ad-container" class="ad-container">
+            <span class="ad-placeholder-text">विज्ञापन यहाँ दिखेगा (नीचे)</span>
+            <script type="text/javascript">
+                var atOptionsBottom = { /* Bottom Ad: Use a unique variable name for bottom ad */
+                    'key' : '4b505c9273cf9161c278efee028f35e2',
+                    'format' : 'iframe',
+                    'height' : 50,
+                    'width' : 320,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="//www.highperformanceformat.com/4b505c9273cf9161c278efee028f35e2/invoke.js"></script>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "'Phlogenogenesis' शब्द किसके द्वारा निर्मित किया गया?",
+                options: ["बांबरी", "ओवेन", "सटन", "जोहेन्सन"],
+                correctAnswerIndex: 1, // ओवेन
+                year: "2023A"
+            },
+            {
+                question: "पैरामीशियम में किस प्रकार का द्वि-विखण्डन होता है?",
+                options: ["सरल द्वि-विखण्डन", "अनुप्रस्थ द्वि-विखण्डन", "अनुदैर्ध्य द्वि-विखण्डन", "अलोकालिक द्वि-विखण्डन"],
+                correctAnswerIndex: 1, // अनुप्रस्थ द्वि-विखण्डन
+                year: "2023A"
+            },
+            {
+                question: "जब नर आकृति में मादा से भिन्न होता है तब कहलाता है",
+                options: ["समलिंगानुगतता", "यौन द्विरूपता", "विषमलिंगानुगतता", "उभयलिंगानुगतता"],
+                correctAnswerIndex: 1, // यौन द्विरूपता
+                year: "2023A"
+            },
+            {
+                question: "निम्नलिखित में से कौन पौधों में कायिक (वानस्पतिक) प्रसार के लिए उत्तरदायी नहीं है?",
+                options: ["भूस्तारिका", "शल्क कंद", "प्रकन्द", "मुकुलक (जेम्यूल)"],
+                correctAnswerIndex: 3, // मुकुलक (जेम्यूल)
+                year: "2024A"
+            },
+            {
+                question: "निम्नलिखित में से कौन-सा कथन असत्य है?",
+                options: ["मार्केशिया के मादा थैल्स के एंथेरिडियोफोर पर एंथेरिडिया रहता है", "कारा उभयलिंगाश्रयी है", "द्विगुणित जीन, अर्द्धसूत्री विभाजन के बाद युग्मक बनाते हैं", "क्लेमाइडोमोनस में अलैंगिक चल बीजाणु बनते हैं"],
+                correctAnswerIndex: 2, // द्विगुणित जीन, अर्द्धसूत्री विभाजन के बाद युग्मक बनाते हैं
+                year: "2024A"
+            },
+            {
+                question: "निम्नलिखित में से किस पौधे को 'बंगाल का आतंक' कहा जाता है?",
+                options: ["जलकुम्भी", "बाँस", "लेन्स", "पार्थेनियम"],
+                correctAnswerIndex: 0, // जलकुम्भी
+                year: "2024A"
+            },
+            {
+                question: "निम्नलिखित में से किस प्रकार का प्रजनन अमीबा में अनुकूल परिस्थिति में होता है?",
+                options: ["विखण्डन", "बहुखण्डन", "मुकुलन", "द्वि-विखण्डन"],
+                correctAnswerIndex: 3, // द्वि-विखण्डन
+                year: "2025A"
+            },
+            {
+                question: "'बायोलॉजी' शब्द का प्रतिपादन किसने किया था?",
+                options: ["अरस्तु", "ग्रेगर मेण्डल", "बोवेरी", "चार्ल्स डार्विन"],
+                correctAnswerIndex: 2, // बोवेरी
+                year: "2025A"
+            },
+            {
+                question: "निम्नलिखित में से कौन जन्म से लेकर मृत्यु के बीच की अवधि है?",
+                options: ["जीवन चक्र", "जीवन काल", "जन्म दर", "प्रवर्द्धन"],
+                correctAnswerIndex: 1, // जीवन काल
+                year: "2025A"
+            },
+            {
+                question: "निम्नलिखित में से किस पौधे की प्रजाति में बीज का उत्पादन असंगजनन द्वारा होता है?",
+                options: ["एस्ट्रेसिया एवं घास", "सरसों", "साइकस एवं आम", "इनमें से कोई नहीं"],
+                correctAnswerIndex: 0, // एस्ट्रेसिया एवं घास
+                year: "2018A"
+            },
+            {
+                question: "युग्मक सामान्यतः किस प्रकार के होते हैं?",
+                options: ["हैप्लॉयड (एक गुणक)", "डिप्लोइड (द्विगुणक)", "पॉलिप्लॉयड (बहुगुणक)", "मोनोप्लॉयड (अगुणक)"],
+                correctAnswerIndex: 0, // हैप्लॉयड (एक गुणक)
+                year: "2019A"
+            },
+            {
+                question: "पादपों में एम्ब्रियोफाइट/उभयस्थानी किससे सम्बन्धित है?",
+                options: ["शैवाल", "ब्रायोफाइट्स", "कवक", "टेरिडोफाइट्स"],
+                correctAnswerIndex: 1, // ब्रायोफाइट्स
+                year: "2019A"
+            },
+            {
+                question: "निम्नांकित किसमें पादपकाय अगुणित होता है?",
+                options: ["शैवाल", "कवक", "ब्रायोफाइट्स", "इनमें से सभी"],
+                correctAnswerIndex: 2, // ब्रायोफाइट्स
+                year: "2020A"
+            },
+            {
+                question: "पौधे, जो जलीय वातावरण में नहीं पाए जाते हैं, हैं",
+                options: ["हाइड्रीला", "ट्रापा", "नीलेो", "बबूल"],
+                correctAnswerIndex: 3, // बबूल
+                year: "2020A"
+            },
+            {
+                question: "अदरक में कायिक प्रवर्धन किसके द्वारा होता है?",
+                options: ["राइजोम", "जड़", "सूकर", "बल्ब"],
+                correctAnswerIndex: 0, // राइजोम
+                year: "2020A"
+            },
+            {
+                question: "भ्रूणपोष वाले बीजों को क्या कहा जाता है?",
+                options: ["एंडोकार्पिक", "बहुभ्रूणीय", "एंडोकार्पिक", "एंडोस्पर्मिक"],
+                correctAnswerIndex: 2, // एंडोकार्पिक
+                year: "2020A"
+            },
+            {
+                question: "किस फल में बीजांड खाया जाता है?",
+                options: ["जायफल", "लीची", "शरीफा", "इनमें से सभी"],
+                correctAnswerIndex: 2, // शरीफा
+                year: "2021A"
+            },
+            {
+                question: "द्विखंडन किसमें पाया जाता है?",
+                options: ["अमीबा में", "परासीशियम में", "(a) और (b) दोनों में", "इनमें से कोई नहीं"],
+                correctAnswerIndex: 2, // (a) और (b) दोनों में
+                year: "2021A"
+            },
+            {
+                question: "सूक्ष्म प्रजनन में क्या संभव है?",
+                options: ["अलैंगिक प्रजनन", "लैंगिक प्रजनन", "(a) और (b) दोनों", "इनमें से कोई नहीं"],
+                correctAnswerIndex: 2, // (a) और (b) दोनों
+                year: "2022A"
+            },
+            {
+                question: "मादा जंतु जिसमें मद चक्र होता है,",
+                options: ["बंदर", "मनुष्य", "(a) और (b) दोनों", "गाय"],
+                correctAnswerIndex: 3, // गाय
+                year: "2022A"
+            },
+            {
+                question: "पेनिसिलियम उत्पादित करता है",
+                options: ["मिटोस्पोर", "जूस्पोर", "मिटोस्पोर", "(a) और (c) दोनों"],
+                correctAnswerIndex: 3, // (a) और (c) दोनों
+                year: "2022A"
+            },
+            {
+                question: "निषेचन आंतरिक होता है",
+                options: ["तारा मछलियों में", "शार्क में", "हड्डीदार मछलियों में", "उभयचर में"],
+                correctAnswerIndex: 1, // शार्क में
+                year: "2022A"
+            },
+            {
+                question: "इम्स्क्यूलेशन किससे संबंधित है?",
+                options: ["बड़े पैमाने पर चयन", "क्लोनल चयन", "संकरण", "शुद्ध रेखा"],
+                correctAnswerIndex: 2, // संकरण
+                year: "2022A"
+            },
+            {
+                question: "प्याज में प्रवर्धन होता है",
+                options: ["पत्तियों द्वारा", "प्रकंद द्वारा", "बीज द्वारा", "बल्ब द्वारा"],
+                correctAnswerIndex: 3, // बल्ब द्वारा
+                year: "2023A"
+            },
+            {
+                question: "समयुग्मक पाए जाते हैं",
+                options: ["मेढक में", "फ्युकस में", "पक्षों में", "क्लेडोफोरा में"],
+                correctAnswerIndex: 3, // क्लेडोफोरा में
+                year: "2023A"
+            },
+            {
+                question: "एनीमोफिली नामक परागण किसके द्वारा होता है?",
+                options: ["चिड़िया", "चमगादड़", "घोंघा", "हवा"],
+                correctAnswerIndex: 3, // हवा
+                year: "2011A"
+            },
+            {
+                question: "अंडा तथा नर युग्मकों का संलयन",
+                options: ["अंडा तथा नर युग्मकों का संलयन", "अंडा तथा सेकेंडरी न्यूक्लियस का संलयन", "अंडा का संलयन", "इनमें से कोई नहीं"],
+                correctAnswerIndex: 1, // अंडा तथा सेकेंडरी न्यूक्लियस का संलयन
+                year: "2012A"
+            },
+            {
+                question: "वायु परागित पुष्प सामान्यतः होते हैं",
+                options: ["आकर्षक", "छोटे", "रंगहीन", "(b) एवं (c) दोनों"],
+                correctAnswerIndex: 3, // (b) एवं (c) दोनों
+                year: "2013A"
+            },
+            {
+                question: "जब संतति की उत्पत्ति एकल जनक द्वारा होती है तब यह क्या कहलाता है?",
+                options: ["लैंगिक जनन", "अलैंगिक जनन", "(a) और (b) दोनों", "आंतरिक निषेचन"],
+                correctAnswerIndex: 1, // अलैंगिक जनन
+                year: "2015A, 2021A"
+            },
+            {
+                question: "'मुकुलन' द्वारा जनन किसमें होता है?",
+                options: ["यीस्ट", "परासीशियम", "पेनिसिलियम", "इनमें से सभी"],
+                correctAnswerIndex: 0, // यीस्ट
+                year: "2015A"
+            },
+            {
+                question: "मानव युग्मकों में गुणसूत्रों की कितनी संख्या होती है?",
+                options: ["21", "23", "44", "46"],
+                correctAnswerIndex: 1, // 23
+                year: "2015A, 2021A, 2023A"
+            },
+            {
+                question: "अंडा प्रजनक है",
+                options: ["मुर्गी", "साँप", "मगरमच्छ", "इनमें से सभी"],
+                correctAnswerIndex: 3, // इनमें से सभी
+                year: "2015A"
+            },
+            {
+                question: "निम्न में से कौन द्विगुणित संरचना है?",
+                options: ["अंडाणु", "भ्रूणपोष", "युग्मनज", "इनमें से सभी"],
+                correctAnswerIndex: 2, // युग्मनज
+                year: "2015A, 2017A"
+            },
+            {
+                question: "निम्न में कौन कीटभक्षी पौधा है?",
+                options: ["ड्रोसेरा", "नेपेंथीस", "(a) और (b) दोनों", "हाइड्रीला"],
+                correctAnswerIndex: 2, // (a) और (b) दोनों
+                year: "2015A, 2021A"
+            },
+            {
+                question: "उभयलिंगी प्राणी है",
+                options: ["मुर्गी", "साँप", "(a) और (b) दोनों", "केंचुआ"],
+                correctAnswerIndex: 3, // केंचुआ
+                year: "2016A, 2021A"
+            },
+            {
+                question: "निम्न में से कौन द्विगुणित संरचना है?",
+                options: ["अंडाणु", "शुक्राणु", "युग्मनज", "इनमें से सभी"],
+                correctAnswerIndex: 2, // युग्मनज
+                year: "2016A, 2020A, 2021A"
+            },
+            {
+                question: "निम्न में से किसमें जल परागण होता है?",
+                options: ["जलकुम्भी", "कमल", "हाइड्रीला", "(b) और (c) दोनों"],
+                correctAnswerIndex: 0, // जलकुम्भी
+                year: "2016A"
+            },
+            {
+                question: "निम्नलिखित में से कौन जंतु उभयलिंगी नहीं है?",
+                options: ["फीता कृमि", "केंचुआ", "घरेलू मक्खी", "जोंक"],
+                correctAnswerIndex: 2, // घरेलू मक्खी
+                year: "2017A"
+            },
+            {
+                question: "मनुष्य (पुरुष) में गुण-सूत्र की संख्या है",
+                options: ["44 + xx", "44 + xy", "46 + xy", "46 + xx"],
+                correctAnswerIndex: 1, // 44 + xy
+                year: "2017A, 2021A"
+            }
+        ];
+
+        let userName = "";
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let incorrectAnswers = 0;
+        let skippedQuestions = 0;
+        let questionAnswered = false; // To prevent multiple selections per question
+
+        // Get DOM elements
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+
+        const userNameInput = document.getElementById('userNameInput');
+        const startButton = document.getElementById('startButton');
+
+        const quizTitle = document.getElementById('quiz-title');
+        const questionCounter = document.getElementById('question-counter');
+        const questionText = document.getElementById('question-text');
+        const optionsList = document.getElementById('options-list');
+        const skipButton = document.getElementById('skipButton');
+        const nextButton = document.getElementById('nextButton');
+
+        const finalUserName = document.getElementById('finalUserName');
+        const totalQuestionsSpan = document.getElementById('totalQuestions');
+        const correctCountSpan = document.getElementById('correctCount');
+        const incorrectCountSpan = document.getElementById('incorrectCount');
+        const skippedCountSpan = document.getElementById('skippedCount');
+
+        // Event Listeners
+        startButton.addEventListener('click', () => {
+            userName = userNameInput.value.trim();
+            if (userName) {
+                startQuiz();
+            } else {
+                alert("कृपया अपना नाम दर्ज करें!");
+            }
+        });
+
+        nextButton.addEventListener('click', nextQuestion);
+        skipButton.addEventListener('click', skipCurrentQuestion);
+
+        // Functions
+        function startQuiz() {
+            welcomeScreen.style.display = 'none';
+            quizScreen.style.display = 'block';
+            quizTitle.textContent = `जीव विज्ञान क्विज़ - ${userName}`;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex < questions.length) {
+                const q = questions[currentQuestionIndex];
+                questionCounter.textContent = `प्रश्न ${currentQuestionIndex + 1} / ${questions.length}`;
+                questionText.textContent = q.question + (q.year ? ` [${q.year}]` : '');
+                optionsList.innerHTML = ''; // Clear previous options
+
+                q.options.forEach((option, index) => {
+                    const li = document.createElement('li');
+                    li.textContent = option;
+                    li.dataset.index = index; // Store original index
+                    li.addEventListener('click', () => checkAnswer(li, index));
+                    optionsList.appendChild(li);
+                });
+
+                nextButton.disabled = true; // Disable next until answer is selected or skipped
+                skipButton.disabled = false;
+                questionAnswered = false; // Reset for new question
+                enableOptions(); // Ensure options are clickable
+            } else {
+                showResults();
+            }
+        }
+
+        function enableOptions() {
+            Array.from(optionsList.children).forEach(li => {
+                li.classList.remove('disabled', 'correct', 'incorrect');
+                li.style.pointerEvents = 'auto'; // Re-enable clicks
+            });
+        }
+
+        function disableOptions() {
+            Array.from(optionsList.children).forEach(li => {
+                li.classList.add('disabled');
+                li.style.pointerEvents = 'none'; // Prevent further clicks
+            });
+        }
+
+        function checkAnswer(selectedOptionElement, selectedOptionIndex) {
+            if (questionAnswered) return; // Prevent multiple answers per question
+            questionAnswered = true;
+
+            const q = questions[currentQuestionIndex];
+            disableOptions(); // Disable all options after user makes a selection
+            skipButton.disabled = true; // Cannot skip after answering
+
+            if (selectedOptionIndex === q.correctAnswerIndex) {
+                selectedOptionElement.classList.add('correct');
+                score++;
+            } else {
+                selectedOptionElement.classList.add('incorrect');
+                incorrectAnswers++;
+                // Highlight the correct answer
+                optionsList.children[q.correctAnswerIndex].classList.add('correct');
+            }
+            nextButton.disabled = false; // Enable next button
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function skipCurrentQuestion() {
+            if (!questionAnswered) { // Only increment skipped if not already answered
+                skippedQuestions++;
+            }
+            nextQuestion();
+        }
+
+        function showResults() {
+            quizScreen.style.display = 'none';
+            resultsScreen.style.display = 'block';
+
+            finalUserName.textContent = userName;
+            totalQuestionsSpan.textContent = questions.length;
+            correctCountSpan.textContent = score;
+            incorrectCountSpan.textContent = incorrectAnswers;
+            skippedCountSpan.textContent = skippedQuestions;
+        }
+
+        // Initial check for name input for button state
+        userNameInput.addEventListener('input', () => {
+            startButton.disabled = userNameInput.value.trim() === "";
+        });
+        startButton.disabled = true; // Disable initially
+    </script>
+</body>
+</html>
